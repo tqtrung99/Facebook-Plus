@@ -26,11 +26,11 @@ jobs:
         run: |
           brew install ldid dpkg xz
           git clone --quiet --recursive https://github.com/theos/theos.git "$THEOS"
-      - name: Build and validate both DEBs
+      - name: Build and validate all three DEBs
         run: |
           set -euo pipefail
-          ./build.sh
-          for scheme in rootless rootfull; do
+          SCHEMES="rootless rootfull roothide" ./build.sh
+          for scheme in rootless rootfull roothide; do
             pkg="packages/Facebook-Plus-v${VERSION}-${scheme}.deb"
             test -s "$pkg"
             test "$(dpkg-deb -f "$pkg" Version)" = "$VERSION"
@@ -54,6 +54,7 @@ jobs:
           gh release create "$TAG" \
             "packages/Facebook-Plus-v${VERSION}-rootless.deb" \
             "packages/Facebook-Plus-v${VERSION}-rootfull.deb" \
+            "packages/Facebook-Plus-v${VERSION}-roothide.deb" \
             --target "$GITHUB_SHA" \
             --title "Facebook Plus v${VERSION}" \
             --notes "Upstream-first fork with Story/Reels downloader fixes, Vietnamese language selector, LinkBridge aliases and Safari extension support. FBAudioFix and ShopeeBlocker remain standalone; neither is bundled into these FBPlus DEBs. Tested rootless and as a combined IPA; legacy deep-link aliases require separate verification."
