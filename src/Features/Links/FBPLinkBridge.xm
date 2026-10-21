@@ -40,9 +40,13 @@ static NSURL *FBPBridgeTargetURL(NSURL *incomingURL) {
 
     NSString *scheme = incomingURL.scheme.lowercaseString ?: @"";
     NSString *host = incomingURL.host.lowercaseString ?: @"";
-    if (![scheme isEqualToString:kFBPBridgeScheme] || ![host isEqualToString:kFBPBridgeHost]) {
-        return nil;
-    }
+    BOOL upstreamRoute = [scheme isEqualToString:kFBPBridgeScheme] &&
+                         [host isEqualToString:kFBPBridgeHost];
+    BOOL legacyFacebookRoute = [scheme isEqualToString:@"fb"] &&
+                               [host isEqualToString:@"fbbridge"];
+    BOOL legacyCustomRoute = [scheme isEqualToString:@"fbbridge"] &&
+                             [host isEqualToString:@"open"];
+    if (!upstreamRoute && !legacyFacebookRoute && !legacyCustomRoute) return nil;
 
     NSURLComponents *components = [NSURLComponents componentsWithURL:incomingURL
                                             resolvingAgainstBaseURL:NO];
