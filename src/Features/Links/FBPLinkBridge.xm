@@ -30,6 +30,8 @@
 /// only own the "fbplusbridge" host.
 static NSString *const kFBPBridgeScheme = @"fb";
 static NSString *const kFBPBridgeHost   = @"fbplusbridge";
+// Consumed by standalone FBAudioFix v0.3.20 to preserve intentional audio focus.
+static NSString *const kFBPExternalDeepLinkNotification = @"FBPExternalDeepLinkDidOpenNotification";
 
 /// Pull the target HTTPS URL out of an incoming bridge route, or return nil if
 /// this is not our route (so the caller passes it through untouched).
@@ -93,6 +95,12 @@ static NSURL *FBPBridgeTargetURL(NSURL *incomingURL) {
     SEL universalLinkSelector =
         NSSelectorFromString(@"application:continueUserActivity:restorationHandler:");
     if (![delegate respondsToSelector:universalLinkSelector]) return %orig;
+
+    // Notify the standalone audio tweak only for a bridge URL we will handle.
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:kFBPExternalDeepLinkNotification
+                      object:nil
+                    userInfo:@{@"url": targetURL.absoluteString ?: @""}];
 
     NSUserActivity *activity =
         [[NSUserActivity alloc] initWithActivityType:NSUserActivityTypeBrowsingWeb];
