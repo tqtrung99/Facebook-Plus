@@ -26,15 +26,31 @@ jobs:
         run: |
           brew install ldid dpkg xz
           git clone --quiet --recursive https://github.com/theos/theos.git "$THEOS"
-      - name: Build and validate all three DEBs
+      - name: Build Rootless and Rootfull with upstream Theos
         run: |
           set -euo pipefail
-          SCHEMES="rootless rootfull roothide" ./build.sh
-          for scheme in rootless rootfull roothide; do
+          SCHEMES="rootless rootfull" ./build.sh
+          for scheme in rootless rootfull; do
             pkg="packages/Facebook-Plus-v${VERSION}-${scheme}.deb"
             test -s "$pkg"
             test "$(dpkg-deb -f "$pkg" Version)" = "$VERSION"
           done
+      - name: Switch to RootHide Theos
+        run: |
+          set -euo pipefail
+          mv "$THEOS" "$RUNNER_TEMP/theos-upstream"
+          git clone --depth 1 --recurse-submodules https://github.com/roothide/theos.git "$THEOS"
+          test -f "$THEOS/makefiles/common.mk"
+      - name: Build and validate RootHide DEB
+        run: |
+          set -euo pipefail
+          SCHEMES="roothide" ./build.sh
+          pkg="packages/Facebook-Plus-v${VERSION}-roothide.deb"
+          test -s "$pkg"
+          test "$(dpkg-deb -f "$pkg" Version)" = "$VERSION"
+          test "$(dpkg-deb -f "$pkg" Architecture)" = "iphoneos-arm64e"
+          dpkg-deb --contents "$pkg" | grep -F 'FacebookPlus.dylib'
+          dpkg-deb --contents "$pkg" | grep -F 'FacebookPlus.bundle'
       - name: Upload DEBs
         uses: actions/upload-artifact@v4
         with:
