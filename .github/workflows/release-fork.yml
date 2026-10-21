@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="$(awk -F': ' '/^Version:/{print $2; exit}' control)"
-          test "$VERSION" = "1.0.2-2"
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+$ ]] || { echo "::error::Invalid control Version: $VERSION"; exit 1; }
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
       - name: Install Theos
         run: |
@@ -51,11 +51,18 @@ jobs:
           test "$(dpkg-deb -f "$pkg" Architecture)" = "iphoneos-arm64e"
           dpkg-deb --contents "$pkg" | grep -F 'FacebookPlus.dylib'
           dpkg-deb --contents "$pkg" | grep -F 'FacebookPlus.bundle'
+      - name: Stage dynamically versioned release assets
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          for scheme in rootless rootfull roothide; do
+            cp "packages/Facebook-Plus-v${VERSION}-${scheme}.deb" release-assets/
+          done
       - name: Upload DEBs
         uses: actions/upload-artifact@v4
         with:
-          name: Facebook-Plus-v1.0.2-2-DEBs
-          path: packages/Facebook-Plus-v1.0.2-2-*.deb
+          name: Facebook-Plus-DEBs
+          path: release-assets/*.deb
           if-no-files-found: error
       - name: Create release tag and publish assets
         env:
