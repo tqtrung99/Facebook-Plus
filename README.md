@@ -10,11 +10,15 @@
   <p>
     <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square"></a>
     <img alt="Platform" src="https://img.shields.io/badge/Platform-iOS%2017.0%2B-lightgrey.svg?style=flat-square">
-    <img alt="Version" src="https://img.shields.io/badge/Version-1.0.1-success.svg?style=flat-square">
+    <img alt="Version" src="https://img.shields.io/badge/Version-1.0.2--2-success.svg?style=flat-square">
   </p>
 </div>
 
 ---
+
+**Fork release candidate: v1.0.2-2** — upstream-first Facebook Plus with selective Story/Reels downloader fixes, Vietnamese language selection, and three LinkBridge URL routes. Tested on iPhone 12 Pro (Dopamine rootless); tested alongside standalone FBAudioFix v0.3.20 and ShopeeBlocker. The triple-tweak IPA and Open in Facebook Safari extension have also been tested on iPhone 18 Pro. The two legacy bridge aliases have not been independently verified. OLED experiments from the old fork and the previously embedded FBAudioFix source are intentionally not ported. The built-in update checker follows upstream SHAJON-404 releases, not fork tags.
+
+**Packaging:** Facebook Plus, [FBAudioFix](https://github.com/ttlongdl/FBAudioFix), and [ShopeeBlocker](https://github.com/ttlongdl/ShopeeBlocker) remain three separate tweaks. For a combined sideload IPA, use the [Triple-Tweak test workflow](.github/workflows/test-triple-ipa.yml) (manual, artifact-only) and sign the resulting IPA with your own provisioning. The older `Build Facebook Plus (.ipa)` workflow builds FBPlus only and may create a draft release; it is not the triple-tweak pipeline.
 
 ## ✨ Features
 
